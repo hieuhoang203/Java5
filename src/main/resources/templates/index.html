@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+</head>
+<body>
+<div class="container">
+    <div class="row m-5">
+        <div class="col-md-4"></div>
+        <div class="col-md-4 border p-3">
+            <form method="post" th:action="@{/nhan-vien/search}">
+                <div class="mb-3">
+                    <label class="form-label">Tuổi min</label>
+                    <input type="number" class="form-control" name="min">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Tuổi max</label>
+                    <input type="number" class="form-control" name="max">
+                </div>
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+        </div>
+        <div class="col-md-4"></div>
+    </div>
+    <form class="row" method="post" th:object="${nhanVien}" th:action="@{/nhan-vien/store}">
+        <div class="col-md-3"></div>
+        <div class="col-md-3">
+            <div class="mb-3">
+                <label class="form-label">Mã</label>
+                <input type="text" class="form-control" th:field="*{ma}">
+                <div class="alert alert-warning" th:if="${#fields.hasErrors('ma')}" th:errors="*{ma}"></div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Họ</label>
+                <input type="text" class="form-control" th:field="*{ho}">
+                <div class="alert alert-warning" th:if="${#fields.hasErrors('ho')}" th:errors="*{ma}"></div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Tên đệm</label>
+                <input type="text" class="form-control"  th:field="*{tenDen}">
+                <div class="alert alert-warning" th:if="${#fields.hasErrors('tenDen')}" th:errors="*{tenDen}"></div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Tên</label>
+                <input type="text" class="form-control" th:field="*{ten}">
+                <div class="alert alert-warning" th:if="${#fields.hasErrors('ten')}" th:errors="*{ten}"></div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="mb-3">
+                <label class="form-label">Giới tính</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="gioiTinh" value="Nam" th:field="*{gioiTinh}">
+                    <label class="form-check-label">
+                        Nam
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="gioiTinh" value="Nữ" th:field="*{gioiTinh}">
+                    <label class="form-check-label">
+                        Nữ
+                    </label>
+                </div>
+                <div class="alert alert-warning" th:if="${#fields.hasErrors('gioiTinh')}" th:errors="*{gioiTinh}"></div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Chức vụ</label>
+                <select class="form-select" th:field="*{id_chucVu}">
+                    <option th:each="cv : ${list_cv}" th:value="${cv.id}" th:text="${cv.ten}">One</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Cửa hàng</label>
+                <select id="sl_ch" class="form-select" th:field="*{id_cuaHang}" onchange="getName()">
+                    <option th:each="ch : ${list_ch}" th:value="${ch.id}" th:text="${ch.ten}">One</option>
+                </select>
+                <span id="textCh"></span>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Năm sinh</label>
+                <input type="date" class="form-control" th:field="*{namSinh}">
+                <div class="alert alert-warning" th:if="${#fields.hasErrors('namSinh')}" th:errors="*{namSinh}"></div>
+            </div>
+        </div>
+        <div class="col-md-3"></div>
+        <div class="mb-3 text-center">
+            <button type="submit" class="btn btn-success center" style="width: 10%">Add</button>
+        </div>
+    </form>
+    <div class="row">
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Mã</th>
+                <th scope="col">Họ và tên</th>
+                <th scope="col">Giới tính</th>
+                <th scope="col">Tuổi</th>
+                <th scope="col">Chức vụ</th>
+                <th scope="col">Của hàng</th>
+                <th scope="col">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="nv, stave : ${list_nv}">
+                <th scope="row" th:text="${stave.index + 1}">1</th>
+                <td th:text="${nv.ma}">Mark</td>
+                <td th:text="${nv.getFullName()}">Otto</td>
+                <td th:text="${nv.gioiTinh}">@mdo</td>
+                <td th:text="${nv.getAge()}">@mdo</td>
+                <td th:text="${nv.id_chucVu.ten}">@mdo</td>
+                <td th:text="${nv.id_cuaHang.ten}">@mdo</td>
+                <td>
+                    <a th:href="@{'/nhan-vien/details/' + ${nv.id}}" class="btn btn-primary">Details</a>
+                    <a th:href="@{'/nhan-vien/edit/' + ${nv.id}}" class="btn btn-warning">Edit</a>
+                    <a th:href="@{'/nhan-vien/delete/' + ${nv.id}}" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+            <nav>
+                <ul class="pagination">
+                    <li class="page-item"><a class="page-link" th:href="@{/nhan-vien/index/previous}">Previous</a></li>
+                    <li class="page-item"><a class="page-link" th:href="@{/nhan-vien/index/0}">1</a></li>
+                    <li class="page-item"><a class="page-link" th:href="@{/nhan-vien/index/1}">2</a></li>
+                    <li class="page-item"><a class="page-link" th:href="@{/nhan-vien/index/2}">3</a></li>
+                    <li class="page-item"><a class="page-link" th:href="@{/nhan-vien/index/next}">Next</a></li>
+                </ul>
+            </nav>
+    </div>
+</div>
+<script>
+    let sl_ch = document.getElementById("sl_ch");
+    let textCh = document.getElementById("textCh");
+    function getName(){
+        textCh.innerText = sl_ch.value;
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+        crossorigin="anonymous"></script>
+</body>
+</html>
